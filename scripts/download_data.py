@@ -44,8 +44,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     ticker = "AAPL"
-    start = "2025-01-01"
-    end = "2026-01-01"
+    start = "2026-01-05"
+    end = "2026-01-11"
     interval = "1m"
 
     raw_data = download_data(ticker, start, end, interval)
