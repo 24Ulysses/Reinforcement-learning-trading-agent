@@ -22,25 +22,29 @@ def download_data(ticker: str, start: str, end: str, interval= "1m"):
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Clean the downloaded data.
-     - Remove missing bars
-     - Sort by timestamp
-     - Enforce numeric types
-     """
-    print("Cleaning data...")
+    """
+    Clean OHLCV data:
+    - Flatten multi-index columns
+    - Remove missing bars
+    - Sort by timestamp
+    - Enforce numeric types
+    """
     df = df.copy()
+
+    # Flatten columns if multi-index
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = ['_'.join(col).strip() if isinstance(col, tuple) else col for col in df.columns]
 
     df = df.dropna()
     df = df.sort_index()
 
-    df = df[df['Volume'] > 0]
-    df = df.astype({'Open': 'float', 'High': 'float', 'Low': 'float', 'Close': 'float', 'Volume': 'int'})
-
     for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
 
     df = df.dropna()
     return df
+
 
 def main():
     ticker = "AAPL"
